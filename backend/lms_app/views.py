@@ -64,8 +64,7 @@ class CourseViewSet(viewsets.ModelViewSet):
         if user.role == 'instructor':
             return Course.objects.filter(instructor=user)
         elif user.role == 'student':
-            enrolled_courses = Enrollment.objects.filter(student=user).values_list('course_id', flat=True)
-            return Course.objects.filter(id__in=enrolled_courses)
+            return Course.objects.all()
         return Course.objects.none()
     
     def perform_create(self, serializer):
@@ -94,13 +93,20 @@ class CourseViewSet(viewsets.ModelViewSet):
     
     @action(detail=True, methods=['post'])
     def join(self, request, pk=None):
-        course = self.get_object()
         user = request.user
         
         if user.role != 'student':
             return Response(
                 {'error': 'Only students can join courses'},
                 status=status.HTTP_403_FORBIDDEN
+            )
+        
+        try:
+            course = Course.objects.get(pk=pk)
+        except Course.DoesNotExist:
+            return Response(
+                {'error': 'Course not found'},
+                status=status.HTTP_404_NOT_FOUND
             )
         
         enrollment, created = Enrollment.objects.get_or_create(
@@ -120,8 +126,15 @@ class CourseViewSet(viewsets.ModelViewSet):
     
     @action(detail=True, methods=['get'])
     def chapters(self, request, pk=None):
-        course = self.get_object()
         user = request.user
+        
+        try:
+            course = Course.objects.get(pk=pk)
+        except Course.DoesNotExist:
+            return Response(
+                {'error': 'Course not found'},
+                status=status.HTTP_404_NOT_FOUND
+            )
         
         if user.role == 'instructor':
             if course.instructor != user:

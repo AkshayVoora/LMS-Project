@@ -41,9 +41,10 @@ export default function StudentCourses() {
     try {
       await coursesAPI.join(courseId);
       alert('Successfully joined the course!');
-      loadCourses();
+      router.push('/student/enrolled');
     } catch (error: any) {
-      alert(error.response?.data?.error || 'Failed to join course');
+      const errorMsg = error.response?.data?.error || error.response?.data?.message || 'Failed to join course';
+      alert(errorMsg);
     }
   };
 
@@ -71,14 +72,16 @@ export default function StudentCourses() {
             <div key={course.id} className="bg-white overflow-hidden shadow rounded-lg">
               <div className="p-5">
                 <h3 className="text-lg font-medium text-gray-900 mb-2">{course.title}</h3>
-                <p className="text-sm text-gray-500 mb-2">{course.description}</p>
-                <p className="text-xs text-gray-400 mb-4">Instructor: {course.instructor.email}</p>
-                <button
-                  onClick={() => handleJoinCourse(course.id)}
-                  className="w-full bg-indigo-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-indigo-700"
-                >
-                  Join Course
-                </button>
+                <p className="text-sm text-gray-500 mb-2 line-clamp-2">{course.description || 'No description available'}</p>
+                <p className="text-xs text-gray-400 mb-4">Instructor: {course.instructor?.email || 'Unknown'}</p>
+                <div className="flex space-x-2">
+                  <button
+                    onClick={() => handleJoinCourse(course.id)}
+                    className="flex-1 bg-indigo-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-indigo-700"
+                  >
+                    Join Course
+                  </button>
+                </div>
               </div>
             </div>
           ))}
