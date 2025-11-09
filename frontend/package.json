@@ -16,6 +16,7 @@
     "@udecode/plate-common": "^38.0.0",
     "@udecode/plate-core": "^48.0.5",
     "@udecode/plate-link": "^38.0.0",
+    "@udecode/plate-ui": "^35.0.0",
     "axios": "^1.6.2",
     "js-cookie": "^3.0.5",
     "next": "14.0.4",
